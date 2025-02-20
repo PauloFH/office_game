@@ -1,0 +1,264 @@
+[gd_scene load_steps=7 format=3 uid="uid://da1b6vestr11n"]
+
+[sub_resource type="GDScript" id="GDScript_7mwuk"]
+resource_name = "Flappy_Bird"
+script/source = "extends Minigame
+
+var vivo:bool = true
+
+@export
+var vidas :int = 3 :
+	set(i):
+		vidas = i
+		%vidas_display.text = \"Vidas: %s\" % i
+		if i <= 0:
+			jogo_perdido.emit()
+
+func _ready() -> void:
+	get_tree().create_timer(2.0).timeout.connect(
+		func():
+			%instrucoes_label.visible = false
+			if %bird.freeze != false:
+				%bird.freeze = false
+	)
+
+func _on_jogo_ganho(pontuacao: int) -> void:
+	%vitoria_label.visible = true
+	%vitoria_label.text = \"Vitória! \\nPontuação: %s\" % pontuacao
+	%bordas.get_child(0).disabled = true
+	%bordas.get_child(1).disabled = true
+
+func _on_jogo_perdido() -> void:
+	%derrota_label.visible = true
+	
+
+
+func _on_area_2d_body_entered(_area: Node2D) -> void:
+	print('print')
+	vidas -= 1
+	$bird.queue_free()
+	jogo_perdido.emit()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xab02"]
+size = Vector2(157, 653)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ejinf"]
+size = Vector2(1412, 80)
+
+[sub_resource type="GDScript" id="GDScript_yv3q5"]
+resource_name = "FlappyBirdControl"
+script/source = "extends RigidBody2D
+
+var pode_flap:bool = true
+
+@export
+var flap_cooldown:float = 0.3
+
+@export
+var velocidade:float = 1.0
+
+@onready var flap_cooldown_timer: Timer = %Timer
+
+func _ready() -> void:
+	flap_cooldown_timer.wait_time = flap_cooldown
+
+func _physics_process(_delta: float) -> void:
+	if pode_flap and Input.is_action_just_pressed(\"ui_accept\"):
+		if freeze != false:
+			freeze = false
+		print('flap')
+		# TODO: implementar dificuldade no controle do passaro
+		linear_velocity += (get_global_mouse_position() - position).normalized() * 750 * velocidade
+		pode_flap = false
+		flap_cooldown_timer.start(flap_cooldown)
+	
+	#if position.y > get_viewport_rect().size.y + 128:
+		#queue_free()
+		#get_parent().jogo_perdido.emit()
+
+
+func _on_body_entered(body: Node) -> void:
+	get_parent().vidas -= 1
+
+
+func _on_timer_timeout() -> void:
+	pode_flap = true
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ga40b"]
+custom_solver_bias = 1.0
+radius = 64.0
+
+[sub_resource type="GDScript" id="GDScript_1m52l"]
+resource_name = "PipeGenerator"
+script/source = "extends Node
+
+@export
+var pipe_scene :PackedScene = preload(\"res://minigame/FlappyBird/flappy_bird_pipe.tscn\")
+
+@export
+var spawn_cooldown: float = 1
+
+@export
+var num_spawns_to_win: int = 10
+
+@onready
+var timer :Timer = $Timer
+
+func _ready() -> void:
+	timer.wait_time = spawn_cooldown
+
+func _on_timer_timeout() -> void:
+	
+	if num_spawns_to_win <= 0:
+		timer.stop()
+		print('cabooooo')
+		get_tree().create_timer(1.0).timeout.connect(
+			func():
+				if get_parent().vivo:
+					get_parent().jogo_ganho.emit(get_parent().pontuacao_atual)
+		)
+		return
+	
+	num_spawns_to_win -= 1
+	
+	var new_pipe :flappyBirdPipe= pipe_scene.instantiate()
+	new_pipe.position.x = get_viewport().size.x - 64
+	new_pipe.position.y = get_viewport().size.y / 2
+	
+	# TODO: implementar dificuldade na geração dos canos
+	new_pipe.altura_da_abertura = randf_range(-0.7, 0.7)
+	new_pipe.tamanho_da_abertura = randf_range(0.5, 1.0)
+	new_pipe.abertura_minima = 120
+	new_pipe.velocidade = 4
+	add_child(new_pipe)
+	
+	timer.wait_time = spawn_cooldown
+"
+
+[node name="FlappyBird" type="Node2D"]
+script = SubResource("GDScript_7mwuk")
+
+[node name="bordas" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bordas"]
+position = Vector2(-183, 327)
+shape = SubResource("RectangleShape2D_xab02")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="bordas"]
+position = Vector2(448, 754)
+shape = SubResource("RectangleShape2D_ejinf")
+
+[node name="bird" type="RigidBody2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(579, 327)
+collision_layer = 3
+collision_mask = 3
+lock_rotation = true
+freeze = true
+contact_monitor = true
+max_contacts_reported = 1
+script = SubResource("GDScript_yv3q5")
+
+[node name="Sprite2D" type="Sprite2D" parent="bird"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bird"]
+shape = SubResource("CircleShape2D_ga40b")
+
+[node name="Timer" type="Timer" parent="bird"]
+unique_name_in_owner = true
+
+[node name="Node" type="Node" parent="."]
+script = SubResource("GDScript_1m52l")
+num_spawns_to_win = 3
+
+[node name="Timer" type="Timer" parent="Node"]
+wait_time = 2.0
+autostart = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="vidas_display" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 64
+text = "Vidas: 3"
+
+[node name="vitoria_label" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -182.0
+offset_top = -89.5
+offset_right = 182.0
+offset_bottom = 89.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 64
+text = "Vitória!
+Pontuação: "
+horizontal_alignment = 1
+
+[node name="derrota_label" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -298.5
+offset_top = -44.0
+offset_right = 298.5
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 64
+text = "Tente novamente..."
+
+[node name="instrucoes_label" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 13.0
+offset_top = 137.0
+offset_right = 875.0
+offset_bottom = 589.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 64
+text = "Se mantenha dentro da tela!
+
+Clique com o mouse para mover-se na direção"
+autowrap_mode = 2
+
+[connection signal="jogo_ganho" from="." to="." method="_on_jogo_ganho"]
+[connection signal="jogo_perdido" from="." to="." method="_on_jogo_perdido"]
+[connection signal="body_entered" from="bordas" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="bird/Timer" to="bird" method="_on_timer_timeout"]
+[connection signal="timeout" from="Node/Timer" to="Node" method="_on_timer_timeout"]
