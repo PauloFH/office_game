@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://5hsnnucf0txf"]
 
-[ext_resource type="Script" path="res://minigame/FlappyBird/flappy_bird_pipe.gd" id="1_nninc"]
+[ext_resource type="Script" path="res://minigame/resolver_falhas/FlappyBird/flappy_bird_pipe.gd" id="1_nninc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8vrxj"]
 size = Vector2(64, 650)
