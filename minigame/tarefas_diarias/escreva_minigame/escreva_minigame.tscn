@@ -1,0 +1,276 @@
+[gd_scene load_steps=3 format=3 uid="uid://d2bkteg00t1s5"]
+
+[sub_resource type="GDScript" id="GDScript_cab5s"]
+resource_name = "escreva_minigame"
+script/source = "extends Minigame
+
+var digitavel:bool = false
+
+# Deve chegar em 100 para declarar vitória
+var progresso:float = 0
+
+# Existem 4 direcoes a serem preenchidas em ordem aqui
+#		^ (0)
+#< (1) 		 	> (2)
+#		v (3)
+var lista_a_preencher :Array[int] = []
+
+var lista_atual: Array[int] = []
+
+
+func _ready() -> void:
+	gerar_codigo()
+
+func ativar_digitacao() ->void :
+	digitavel = true
+	%btn_cima.disabled = false
+	%btn_esq.disabled = false
+	%btn_dir.disabled = false
+	%btn_baixo.disabled = false
+
+func desativar_digitacao() -> void:
+	digitavel = false
+	%btn_cima.disabled = true
+	%btn_esq.disabled = true
+	%btn_dir.disabled = true
+	%btn_baixo.disabled = true
+	
+	var tempo_de_espera = 0.5 * exp(-0.3 * (progresso / 100))
+	%Timer.start(0.5)
+
+func adicionar_pontuacao(quant:float) -> void:
+	progresso += quant
+	if progresso >= 100.0:
+		jogo_ganho.emit
+
+func codigo(id:int) -> String:
+	match id:
+		0: return \"^\"
+		1: return \"<\"
+		2: return \">\"
+		3: return \"v\"
+		_: return \"\"
+
+func preencher_lista(id:int) -> void:
+	if digitavel:
+		lista_atual.append(id)
+		%escrevendo.text += codigo(id)
+		
+		# TODO: lógica de dificuldade aqui...
+		
+		if lista_atual.size() == lista_a_preencher.size():
+			contar_pontuacao()
+		
+		desativar_digitacao()
+
+func contar_pontuacao() -> void:
+	var pontuacao_atual :float = 0.0
+	
+	var tamanho_lista :int = lista_atual.size()
+
+	var quant_erros:int
+	var pontos_a_ganhar:float = 1/ (0.6 * tamanho_lista)
+	print('loop de conferir valores')
+	for i in range(0, tamanho_lista - 1):
+		print(pontos_a_ganhar)
+		if lista_atual[i] == lista_a_preencher[i]:
+			pontuacao_atual += pontos_a_ganhar
+		else:
+			quant_erros += 1
+			pontos_a_ganhar /= 3
+			if pontos_a_ganhar > 0: 
+				pontuacao_atual += pontos_a_ganhar
+			else: 
+				print('nao da mais pra ganhar pontos')
+				break
+	
+	var tween_finalizacao :Tween = get_tree().create_tween().set_parallel()
+	if pontos_a_ganhar > 0:
+		adicionar_pontuacao(pontuacao_atual)
+		tween_finalizacao.tween_property(%progresso, \"value\", %progresso.value + pontuacao_atual, 0.25)
+		tween_finalizacao.tween_property(%texto_base, \"modulate\", Color.WHITE, 1).from(Color.GREEN)
+	else:
+		tween_finalizacao.tween_property(%texto_base, \"modulate\", Color.WHITE, 1).from(Color.RED).set_ease(Tween.EASE_OUT)
+	await tween_finalizacao.finished
+	await get_tree().create_timer(0.5).timeout
+	lista_atual.clear()
+	lista_a_preencher.clear()
+	%escrevendo.text = \"\"
+	if progresso < 100.0:
+		gerar_codigo()
+
+
+func gerar_codigo() -> void:
+	var coeficiente_de_progresso = (progresso - 10 if progresso >= 10 else 0) / 9
+	var quant_codigos = 5 + ceil(0.12 * coeficiente_de_progresso * coeficiente_de_progresso)
+	
+	%texto_base.text = \"\"
+	for i in range(0, quant_codigos):
+		var id :int = randi_range(0, 3)
+		lista_a_preencher.append(id)
+		%texto_base.text += codigo(id)
+		await get_tree().create_timer(0.025).timeout
+
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_pressed():
+		match event.keycode:
+			KEY_UP: preencher_lista(0)
+			KEY_DOWN: preencher_lista(3)
+			KEY_LEFT: preencher_lista(1)
+			KEY_RIGHT: preencher_lista(2)
+"
+
+[sub_resource type="FontVariation" id="FontVariation_ghghf"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_cab5s")
+
+[node name="progresso" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 27.0
+grow_horizontal = 2
+
+[node name="texto_base" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -159.0
+offset_right = 20.0
+offset_bottom = -136.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="escrevendo" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -126.0
+offset_right = 20.0
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = SubResource("FontVariation_ghghf")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+custom_minimum_size = Vector2(196, 196)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = 99.0
+offset_right = 20.0
+offset_bottom = 139.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 3
+
+[node name="div" type="ReferenceRect" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="btn_cima" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "^"
+
+[node name="div2" type="ReferenceRect" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="btn_esq" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "<"
+
+[node name="div3" type="ReferenceRect" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="btn_dir" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = ">"
+
+[node name="div4" type="ReferenceRect" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="btn_baixo" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "v"
+
+[node name="div5" type="ReferenceRect" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.5
+autostart = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 40.0
+offset_bottom = 11.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "Digite a sequência correta e 
+complete a barra de progresso
+
+Use os botões na tela, ou
+Os direcionais do teclado"
+
+[connection signal="button_down" from="GridContainer/btn_cima" to="." method="preencher_lista" binds= [0]]
+[connection signal="button_down" from="GridContainer/btn_esq" to="." method="preencher_lista" binds= [1]]
+[connection signal="button_down" from="GridContainer/btn_dir" to="." method="preencher_lista" binds= [2]]
+[connection signal="button_down" from="GridContainer/btn_baixo" to="." method="preencher_lista" binds= [3]]
+[connection signal="timeout" from="Timer" to="." method="ativar_digitacao"]
