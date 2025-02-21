@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3 uid="uid://da1b6vestr11n"]
+
+[ext_resource type="PackedScene" uid="uid://5hsnnucf0txf" path="res://minigame/FlappyBird/flappy_bird_pipe.tscn" id="1_1838u"]
+
+[sub_resource type="GDScript" id="GDScript_7mwuk"]
+resource_name = "Flappy_Bird"
+script/source = "extends Minigame
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	print('mais um ponto ebee')
+"
+
+[sub_resource type="GDScript" id="GDScript_yv3q5"]
+resource_name = "FlappyBirdControl"
+script/source = "extends RigidBody2D
+
+func _physics_process(_delta: float) -> void:
+	if Input.is_action_just_pressed(\"ui_accept\"):
+		print('flap')
+		linear_velocity = Vector2.UP * 500.0
+
+
+
+func _on_body_entered(body: Node) -> void:
+	print('perdi')
+	get_parent().jogo_perdido.emit()
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ga40b"]
+custom_solver_bias = 1.0
+radius = 64.0
+
+[sub_resource type="GDScript" id="GDScript_1m52l"]
+resource_name = "PipeGenerator"
+script/source = "extends Node
+
+var pipe_scene :PackedScene = preload(\"res://minigame/FlappyBird/flappy_bird_pipe.tscn\")
+"
+
+[node name="FlappyBird" type="Node2D"]
+script = SubResource("GDScript_7mwuk")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2(579, 327)
+script = SubResource("GDScript_yv3q5")
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CircleShape2D_ga40b")
+
+[node name="Node" type="Node" parent="."]
+script = SubResource("GDScript_1m52l")
+
+[node name="FlappyBirdPipe" parent="." instance=ExtResource("1_1838u")]
+position = Vector2(0, 325)
+
+[connection signal="body_entered" from="RigidBody2D" to="RigidBody2D" method="_on_body_entered"]
+[connection signal="body_shape_entered" from="RigidBody2D" to="RigidBody2D" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="RigidBody2D" to="RigidBody2D" method="_on_body_shape_exited"]
