@@ -1,0 +1,150 @@
+[gd_scene load_steps=2 format=3 uid="uid://dnu2t834udsfe"]
+
+[sub_resource type="GDScript" id="GDScript_g57ca"]
+resource_name = "respiracao_artificial_minigame"
+script/source = "extends Minigame
+
+# variável que vai decaindo ao longo do tempo
+var progresso:float = 50.0 :
+	set(i):
+		progresso = clamp(i, 0.0, 100.0)
+		%progresso.value = i
+		if progresso == 100.0:
+			set_process(false)
+			jogo_ganho.emit()
+		elif progresso == 0.0:
+			jogo_perdido.emit()
+
+var velocidade:float = 5.0
+var decaimento:float = 1.0
+
+var botao_escolhido:int = 0 :
+	set(i):
+		botao_escolhido = i
+		%qual_apertar.text = \"BOTÃO %s\" % i 
+
+func _ready() -> void:
+	var lista_botoes:Array[Button] = [%btn_1, %btn_2, %btn_3]
+	
+	var i:int = 1
+	while !lista_botoes.is_empty():
+		var id :int = randi_range(0, lista_botoes.size() - 1)
+		var botao_escolhido:Button= lista_botoes.pop_at(id)
+		botao_escolhido.text = str(i)
+		botao_escolhido.pressed.connect(pressionar_botao.bind(i))
+		i += 1
+	
+	# TODO: inserir dificuladde aqui
+	%timer.start(randi_range(0.5, 5.0))
+	#botao_escolhido = randi_range(1, 3)
+
+func _process(delta: float) -> void:
+	
+	if botao_escolhido != 0:
+		progresso -= delta * velocidade * decaimento
+	else:
+		progresso -= delta
+	if decaimento <= 5.0:
+		decaimento += delta / 4
+
+func pressionar_botao(id:int) -> void :
+	progresso += velocidade
+
+
+func _on_timer_timeout() -> void:
+	botao_escolhido = randi_range(0, 3)
+"
+
+[node name="RespiracaoArtificialMinigame" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = SubResource("GDScript_g57ca")
+
+[node name="progresso" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 27.0
+grow_horizontal = 2
+value = 50.0
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -66.0
+offset_top = 51.0
+offset_right = 66.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 3
+
+[node name="btn_1" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+text = "1
+"
+
+[node name="btn_2" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+text = "2"
+
+[node name="btn_3" type="Button" parent="GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+text = "3
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -149.0
+offset_right = 20.0
+offset_bottom = -126.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "pressione o botão:"
+
+[node name="qual_apertar" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -79.0
+offset_right = 20.0
+offset_bottom = -56.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 64
+text = "BOTÃO 1
+"
+
+[node name="timer" type="Timer" parent="."]
+unique_name_in_owner = true
+
+[connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]
