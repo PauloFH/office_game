@@ -1,13 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://ry6xksy1epif"]
+[gd_scene load_steps=4 format=3 uid="uid://ry6xksy1epif"]
 
 [ext_resource type="Script" path="res://scripts/Main/main.gd" id="1_ddyui"]
-[ext_resource type="PackedScene" uid="uid://72cu1aqpb0td" path="res://scenes/Objects/obj_icon.tscn" id="2_l85e0"]
 [ext_resource type="PackedScene" uid="uid://dfo8i5rpqyioh" path="res://scenes/Character/Player/obj_player.tscn" id="3_4xac7"]
-[ext_resource type="Script" path="res://scripts/Objects/area_2d.gd" id="3_a6545"]
-[ext_resource type="Texture2D" uid="uid://bkohqxbkgtbyu" path="res://icon.svg" id="4_8i72w"]
-[ext_resource type="FontFile" uid="uid://msmx8m8clr2p" path="res://resources/Font/Minecraft.ttf" id="5_l5x53"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rv188"]
+[ext_resource type="PackedScene" uid="uid://cn5usoayl5w6v" path="res://scenes/Objects/icon_interact.tscn" id="3_q5ffj"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_ddyui")
@@ -15,28 +10,5 @@ script = ExtResource("1_ddyui")
 [node name="objPlayer" parent="." instance=ExtResource("3_4xac7")]
 position = Vector2(582, 448)
 
-[node name="Area2D" type="Area2D" parent="."]
-visible = false
-position = Vector2(577, 199)
-script = ExtResource("3_a6545")
-
-[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("4_8i72w")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-scale = Vector2(7, 7)
-shape = SubResource("RectangleShape2D_rv188")
-
-[node name="Label" type="Label" parent="Area2D"]
-offset_left = -577.0
-offset_top = -199.0
-offset_right = -469.0
-offset_bottom = -176.0
-theme_override_fonts/font = ExtResource("5_l5x53")
-text = "[E] to interact"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="objIcon" parent="." instance=ExtResource("2_l85e0")]
-position = Vector2(873, 453)
+[node name="IconInteract" parent="." instance=ExtResource("3_q5ffj")]
+position = Vector2(587, 194)
