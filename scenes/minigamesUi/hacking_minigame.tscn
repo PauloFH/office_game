@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c5q0cf1elkoby"]
+[gd_scene load_steps=19 format=3 uid="uid://c5q0cf1elkoby"]
 
 [ext_resource type="FontFile" uid="uid://msmx8m8clr2p" path="res://resources/Font/Minecraft.ttf" id="1_dh7w5"]
 [ext_resource type="Script" path="res://scripts/minigames/hacking_minigame.gd" id="1_o0wpr"]
@@ -61,7 +61,21 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="HackingMinigame" type="Control" node_paths=PackedStringArray("archive_component", "button_container")]
+[sub_resource type="LabelSettings" id="LabelSettings_gln6v"]
+line_spacing = 5.0
+font = ExtResource("1_dh7w5")
+font_size = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_w7wrf"]
+font = ExtResource("1_dh7w5")
+
+[sub_resource type="LabelSettings" id="LabelSettings_sguyn"]
+font = ExtResource("1_dh7w5")
+
+[sub_resource type="LabelSettings" id="LabelSettings_wfjgo"]
+font = ExtResource("1_dh7w5")
+
+[node name="HackingMinigame" type="Control" node_paths=PackedStringArray("archive_component", "button_container", "attempts_text_label", "last_attempt_label", "correct_characters_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -71,6 +85,9 @@ grow_vertical = 2
 script = ExtResource("1_o0wpr")
 archive_component = NodePath("ArchiveComponent")
 button_container = NodePath("hacking_game/background/button_container")
+attempts_text_label = NodePath("hacking_game/down/attempts")
+last_attempt_label = NodePath("hacking_game/down/last_attempt")
+correct_characters_label = NodePath("hacking_game/down/correct_characters")
 
 [node name="background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -190,7 +207,7 @@ layout_mode = 2
 offset_left = 98.0
 offset_top = 110.0
 offset_right = 631.0
-offset_bottom = 430.0
+offset_bottom = 399.0
 columns = 6
 
 [node name="top" type="Panel" parent="hacking_game"]
@@ -229,6 +246,48 @@ theme_override_fonts/font = ExtResource("1_dh7w5")
 text = "X"
 alignment = 0
 
+[node name="down" type="Panel" parent="hacking_game"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="information" type="Label" parent="hacking_game/down"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 13.0
+offset_right = 407.0
+offset_bottom = 45.0
+text = "company hacking system"
+label_settings = SubResource("LabelSettings_gln6v")
+
+[node name="attempts" type="Label" parent="hacking_game/down"]
+layout_mode = 0
+offset_left = 473.0
+offset_top = 4.0
+offset_right = 543.0
+offset_bottom = 27.0
+text = "attempts: 3/3"
+label_settings = SubResource("LabelSettings_w7wrf")
+
+[node name="last_attempt" type="Label" parent="hacking_game/down"]
+layout_mode = 0
+offset_left = 472.0
+offset_top = 23.0
+offset_right = 512.0
+offset_bottom = 46.0
+text = "last attempt:"
+label_settings = SubResource("LabelSettings_sguyn")
+
+[node name="correct_characters" type="Label" parent="hacking_game/down"]
+layout_mode = 0
+offset_left = 472.0
+offset_top = 39.0
+offset_right = 629.0
+offset_bottom = 62.0
+text = "correct characters:"
+label_settings = SubResource("LabelSettings_wfjgo")
+
 [node name="ArchiveComponent" parent="." instance=ExtResource("6_qyc88")]
 
 [connection signal="timeout" from="taskbar/background/timerpanel/Timer" to="taskbar/background/timerpanel/TimerLabel" method="_on_timer_timeout"]
+[connection signal="pressed" from="hacking_game/close_button" to="." method="_on_close_button_pressed"]
