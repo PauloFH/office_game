@@ -14,10 +14,6 @@ config/name="Office_Simulator"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-InteractionManager="*res://scenes/Interaction/interaction_manager.tscn"
-
 [global_group]
 
 Player="Grupo em que o Player se encontra"

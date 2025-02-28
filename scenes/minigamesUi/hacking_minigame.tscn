@@ -1,9 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://c5q0cf1elkoby"]
+[gd_scene load_steps=15 format=3 uid="uid://c5q0cf1elkoby"]
 
 [ext_resource type="FontFile" uid="uid://msmx8m8clr2p" path="res://resources/Font/Minecraft.ttf" id="1_dh7w5"]
+[ext_resource type="Script" path="res://scripts/minigames/hacking_minigame.gd" id="1_o0wpr"]
 [ext_resource type="Texture2D" uid="uid://du0h7din1yh7v" path="res://resources/Images/button.png" id="2_drcx7"]
 [ext_resource type="Texture2D" uid="uid://c1telbt5c8anh" path="res://resources/Images/Flag.png" id="3_3alur"]
 [ext_resource type="Script" path="res://scripts/minigames/minigamesUi/timer_label.gd" id="4_jqlos"]
+[ext_resource type="PackedScene" uid="uid://bt208fx4k87os" path="res://scenes/Components/archive_component.tscn" id="6_qyc88"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0t6n1"]
 bg_color = Color(0.533037, 0.533037, 0.533037, 1)
@@ -39,13 +41,36 @@ expand_margin_bottom = 2.0
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_58qrr"]
 texture = ExtResource("2_drcx7")
 
-[node name="HackingMinigame" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0473q"]
+bg_color = Color(0.223529, 0.301961, 0.803922, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+shadow_color = Color(2.25613e-09, 0.00328989, 0.00447023, 1)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ns26t"]
+bg_color = Color(0.423529, 0.423529, 0.423529, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="HackingMinigame" type="Control" node_paths=PackedStringArray("archive_component", "button_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_o0wpr")
+archive_component = NodePath("ArchiveComponent")
+button_container = NodePath("hacking_game/background/button_container")
 
 [node name="background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -56,16 +81,15 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.12549, 0.54902, 0.443137, 1)
 
-[node name="taskbar" type="PanelContainer" parent="."]
-texture_filter = 5
+[node name="taskbar" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 581.0
-offset_right = -2.0
+offset_top = -68.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
 [node name="background" type="Panel" parent="taskbar"]
 layout_mode = 2
@@ -143,5 +167,68 @@ script = ExtResource("4_jqlos")
 [node name="Timer" type="Timer" parent="taskbar/background/timerpanel"]
 wait_time = 10.0
 autostart = true
+
+[node name="hacking_game" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -335.0
+offset_top = 45.0
+offset_right = 388.0
+offset_bottom = -89.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="background" type="Panel" parent="hacking_game"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0473q")
+
+[node name="button_container" type="GridContainer" parent="hacking_game/background"]
+layout_mode = 2
+offset_left = 98.0
+offset_top = 110.0
+offset_right = 631.0
+offset_bottom = 430.0
+columns = 6
+
+[node name="top" type="Panel" parent="hacking_game"]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ns26t")
+
+[node name="name_window" type="Label" parent="hacking_game/top"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -361.5
+offset_top = -8.0
+offset_right = 361.5
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("1_dh7w5")
+text = "Hacking"
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 161
+uppercase = true
+
+[node name="close_button" type="Button" parent="hacking_game"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("1_dh7w5")
+text = "X"
+alignment = 0
+
+[node name="ArchiveComponent" parent="." instance=ExtResource("6_qyc88")]
 
 [connection signal="timeout" from="taskbar/background/timerpanel/Timer" to="taskbar/background/timerpanel/TimerLabel" method="_on_timer_timeout"]
