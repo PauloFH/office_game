@@ -1,4 +1,5 @@
 extends Control
+class_name HackingMinigame
 
 @export var archive_component: ArchiveComponent
 @export var button_container: GridContainer

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cn5usoayl5w6v"]
 
-[ext_resource type="Script" path="res://scripts/Objects/icon_interact.gd" id="1_ariva"]
-[ext_resource type="Texture2D" uid="uid://bkohqxbkgtbyu" path="res://icon.svg" id="2_00e7q"]
+[ext_resource type="Script" uid="uid://b82vkllsmbgst" path="res://scripts/Objects/icon_interact.gd" id="1_ariva"]
+[ext_resource type="Texture2D" uid="uid://dtm42arxb0gx6" path="res://resources/Images/computer.png" id="2_vmuya"]
 [ext_resource type="FontFile" uid="uid://msmx8m8clr2p" path="res://resources/Font/Minecraft.ttf" id="3_1jule"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h3p2c"]
@@ -10,8 +10,7 @@
 script = ExtResource("1_ariva")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.4, 0.4)
-texture = ExtResource("2_00e7q")
+texture = ExtResource("2_vmuya")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 scale = Vector2(5, 5)

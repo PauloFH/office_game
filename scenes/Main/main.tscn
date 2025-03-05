@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://ry6xksy1epif"]
 
-[ext_resource type="Script" path="res://scripts/Main/main.gd" id="1_ddyui"]
+[ext_resource type="Script" uid="uid://dn2bl1m8ww2de" path="res://scripts/Main/main.gd" id="1_ddyui"]
 [ext_resource type="PackedScene" uid="uid://dfo8i5rpqyioh" path="res://scenes/Character/Player/obj_player.tscn" id="3_4xac7"]
 [ext_resource type="PackedScene" uid="uid://cn5usoayl5w6v" path="res://scenes/Objects/icon_interact.tscn" id="3_q5ffj"]
 
@@ -12,3 +12,11 @@ position = Vector2(582, 448)
 
 [node name="IconInteract" parent="." instance=ExtResource("3_q5ffj")]
 position = Vector2(587, 194)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

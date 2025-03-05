@@ -1,7 +1,7 @@
 [gd_scene load_steps=53 format=3 uid="uid://dfo8i5rpqyioh"]
 
 [ext_resource type="Texture2D" uid="uid://06yiwkhktf5e" path="res://resources/Modern tiles_Free/Characters_free/Adam_16x16.png" id="1_07jso"]
-[ext_resource type="Script" path="res://scripts/Character/Player/obj_player.gd" id="1_40mbf"]
+[ext_resource type="Script" uid="uid://ppm2fwln3elq" path="res://scripts/Character/Player/obj_player.gd" id="1_40mbf"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f1vi3"]
 atlas = ExtResource("1_07jso")
@@ -385,10 +385,11 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0qefn"]
 size = Vector2(12, 11)
 
-[node name="objPlayer" type="CharacterBody2D"]
+[node name="objPlayer" type="CharacterBody2D" node_paths=PackedStringArray("ui_controller")]
 collision_layer = 15
 collision_mask = 15
 script = ExtResource("1_40mbf")
+ui_controller = NodePath("ui_controller")
 
 [node name="animPlayer" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
@@ -404,3 +405,12 @@ shape = SubResource("RectangleShape2D_0qefn")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2, 2)
+
+[node name="ui_controller" type="Control" parent="."]
+z_index = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

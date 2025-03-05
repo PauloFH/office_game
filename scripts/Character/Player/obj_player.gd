@@ -1,6 +1,8 @@
 extends Character
 class_name Player
 
+@export var ui_controller: Control
+
 func _ready() -> void:
 	%animPlayer.play("idle_down")
 
@@ -29,3 +31,7 @@ func _change_state() -> void:
 func _move() -> void:
 	velocity = direction * Speed
 	move_and_slide()
+
+func _interact(minigame: Control) -> void:
+	ui_controller.add_child(minigame)
+	minigame.show()

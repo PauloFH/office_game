@@ -1,10 +1,10 @@
 [gd_scene load_steps=19 format=3 uid="uid://c5q0cf1elkoby"]
 
 [ext_resource type="FontFile" uid="uid://msmx8m8clr2p" path="res://resources/Font/Minecraft.ttf" id="1_dh7w5"]
-[ext_resource type="Script" path="res://scripts/minigames/hacking_minigame.gd" id="1_o0wpr"]
+[ext_resource type="Script" uid="uid://bgmfoff85w15w" path="res://scripts/minigames/hacking_minigame.gd" id="1_o0wpr"]
 [ext_resource type="Texture2D" uid="uid://du0h7din1yh7v" path="res://resources/Images/button.png" id="2_drcx7"]
 [ext_resource type="Texture2D" uid="uid://c1telbt5c8anh" path="res://resources/Images/Flag.png" id="3_3alur"]
-[ext_resource type="Script" path="res://scripts/minigames/minigamesUi/timer_label.gd" id="4_jqlos"]
+[ext_resource type="Script" uid="uid://cet4aui2bit8u" path="res://scripts/minigames/minigamesUi/timer_label.gd" id="4_jqlos"]
 [ext_resource type="PackedScene" uid="uid://bt208fx4k87os" path="res://scenes/Components/archive_component.tscn" id="6_qyc88"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0t6n1"]
