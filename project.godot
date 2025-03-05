@@ -14,6 +14,10 @@ config/name="Office_Simulator"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[dotnet]
+
+project/assembly_name="Office_Simulator"
+
 [global_group]
 
 Player="Grupo em que o Player se encontra"
