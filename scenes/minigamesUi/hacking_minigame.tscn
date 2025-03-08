@@ -208,7 +208,7 @@ offset_left = 98.0
 offset_top = 110.0
 offset_right = 631.0
 offset_bottom = 399.0
-columns = 6
+columns = 5
 
 [node name="top" type="Panel" parent="hacking_game"]
 custom_minimum_size = Vector2(100, 25)

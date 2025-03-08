@@ -30,12 +30,14 @@ func _ready() -> void:
 	add_buttons()
 
 func add_buttons(amount: int = 30) -> void:
+	var font = load("res://resources/Font/Minecraft.ttf")
+	
 	for i in range(amount):
 		var button = Button.new()
 		button.text = palavras_sorteadas[i]
-		#button.pressed.connect(func(): print(button.text))
+		button.add_theme_font_override("font", font)
 		button.pressed.connect(check_button.bind(button))
-		button_container.add_child(button)  # Adiciona ao container
+		button_container.add_child(button)  
 
 func att_attempts_text() -> void:
 	attempts_index = attempts_index - 1 if attempts_index >= 1 else attempts_index

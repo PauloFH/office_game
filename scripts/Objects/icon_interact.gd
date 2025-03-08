@@ -15,6 +15,7 @@ func _interact() -> void:
 	if not minigame:
 		minigame = minigame_scene.instantiate() as HackingMinigame
 		player._interact(minigame)
+		
 	
 
 func _input(event: InputEvent) -> void:

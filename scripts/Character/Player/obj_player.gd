@@ -16,6 +16,9 @@ func _input(event: InputEvent) -> void:
 		"move_up", "move_down")
 	
 
+func _change_cam(x: float, y:float) -> void:
+	%playerCam.zoom = Vector2(x, y)
+
 func _change_state() -> void:
 	if direction == Vector2.ZERO:
 		if state.begins_with("walk"):

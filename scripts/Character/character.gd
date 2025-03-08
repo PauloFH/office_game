@@ -8,6 +8,9 @@ var direction : Vector2 = Vector2.ZERO
 func _interact(minigame: Control) -> void:
 	pass
 
+func _change_cam(x: float, y: float) -> void:
+	pass
+
 func _change_state() -> void:
 	pass
 
